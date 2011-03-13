@@ -128,6 +128,8 @@ def filename_and_url_and_size_for_episode(episode):
 	extension = url.split('.')[-1]
 	name = unicode(episode.name)
 	
+	name = name.replace(':', ' - ')
+	name = name.replace('  ', ' ')
 	name = name.replace('`', '"')
 	name = name.replace('\'', '"')
 	name = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore')
