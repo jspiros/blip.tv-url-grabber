@@ -6,6 +6,7 @@ blip.tv-url-grabber.py
 """
 
 import sys
+import os
 import argparse
 from urlparse import urljoin
 from urllib2 import urlopen
@@ -26,11 +27,15 @@ arg_parser.add_argument(
 	help='blip.tv channel to obtain urls from (e.g. http://pycon.blip.tv)'
 )
 arg_parser.add_argument(
-	'after_date',
+	'--after',
 	help='only urls posted after this date will be handled',
-	nargs='?',
 	default=None,
 	type=date_string
+)
+arg_parser.add_argument(
+	'--ignore_dir',
+	help='only urls not downloaded in this directory will be handled',
+	default=None
 )
 
 
@@ -134,12 +139,18 @@ def filename_and_url_and_size_for_episode(episode):
 
 if __name__ == '__main__':
 	args = arg_parser.parse_args()
+	ignore_uuids = []
+	if args.ignore_dir:
+		ignore_uuids = [filename.split('.')[-2] for filename in os.listdir(args.ignore_dir)]
 	channel = BlipTVChannel(args.url)
 	total_size = 0
 	print "#!/bin/bash"
 	for uuid, episode in channel.episodes.items():
-		if args.after_date:
-			if episode.date < args.after_date:
+		if args.after:
+			if episode.date < args.after:
+				continue
+		if ignore_uuids:
+			if episode.uuid in ignore_uuids:
 				continue
 		filename, url, size = filename_and_url_and_size_for_episode(episode)
 		total_size += size
