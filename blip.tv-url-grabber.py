@@ -3,7 +3,6 @@
 """
 blip.tv-url-grabber.py
 
-Created by Joseph Spiros on 2011-02-14.
 """
 
 import sys
@@ -16,10 +15,22 @@ import datetime
 import string
 
 
+def date_string(string):
+	cmp = string.split('-')
+	return datetime.date(int(cmp[0]), int(cmp[1]), int(cmp[2]))
+
+
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument(
 	'url',
 	help='blip.tv channel to obtain urls from (e.g. http://pycon.blip.tv)'
+)
+arg_parser.add_argument(
+	'after_date',
+	help='only urls posted after this date will be handled',
+	nargs='?',
+	default=None,
+	type=date_string
 )
 
 
@@ -127,6 +138,9 @@ if __name__ == '__main__':
 	total_size = 0
 	print "#!/bin/bash"
 	for uuid, episode in channel.episodes.items():
+		if args.after_date:
+			if episode.date < args.after_date:
+				continue
 		filename, url, size = filename_and_url_and_size_for_episode(episode)
 		total_size += size
 		
