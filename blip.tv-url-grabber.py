@@ -99,7 +99,7 @@ class BlipTVEpisode(object):
 
 def best_video_url_and_size_for_episode(episode):
 	ranked = [] # list of tuples, (object, ranking)
-	for media in episode.videos_excluding_conversions:
+	for media in episode.videos:
 		ranking = 0
 		if media['role'].startswith('Web'):
 			ranking = ranking - 1
